@@ -1,0 +1,4 @@
+interface:
+  display_name: "Minecraft Modder NeoForge"
+  short_description: "按 NeoForge 26.1.2 / Minecraft 26.1.2 辅助模组开发、数据生成、测试与崩溃排查"
+  default_prompt: "Use $minecraft-modder-neoforge to handle this Minecraft modding task in Simplified Chinese. Follow the skill's documentation-first workflow, default to NeoForge 26.1.2 and Minecraft 26.1.2, clarify ambiguity before coding, keep changes surgical, and verify the appropriate Gradle build or test task."
