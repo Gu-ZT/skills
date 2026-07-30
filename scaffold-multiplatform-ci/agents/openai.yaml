@@ -1,4 +1,4 @@
 interface:
   display_name: "Scaffold Multi-Platform CI"
-  short_description: "Create matrix CI for multi-platform, multi-architecture releases"
+  short_description: "创建支持多平台和多架构发布的 CI 工作流"
   default_prompt: "Use $scaffold-multiplatform-ci to create a GitHub Actions CI and release workflow for this project."

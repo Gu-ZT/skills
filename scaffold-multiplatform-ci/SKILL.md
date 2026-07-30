@@ -32,14 +32,14 @@ Use this skill to design a reproducible GitHub Actions pipeline with separate qu
    - integration: an isolated Linux job for real protocol/container tests. Start services, poll readiness with a bounded timeout, run ignored integration tests serially when required, collect logs with if: always(), and tear down volumes with if: always().
    - prepare: require quality and integration success. Resolve a unique prerelease tag such as v<manifest-version>-dev.<run-number> for a default-branch build, or validate an exact v<manifest-version> stable tag. Create or reuse the release idempotently and expose its id, tag, artifact version, changelog version, and prerelease state as job outputs. Grant only contents: write.
    - build-* or build matrix: use explicit target triples and architecture-specific cache keys. Install each platform SDK before packaging. Upload native artifacts to the prepared release. Keep signed and unsigned paths separate; signing secrets must only be present in the signed step.
-   - update-release-notes: require every build job, fetch the release and tags, extract matching English and Simplified Chinese changelog sections, and render an architecture/platform/file table.
+   - update-release-notes: require every build job, fetch the release and tags, extract matching English and Simplified Chinese changelog sections, and render an architecture/platform/file table whose artifact names link directly to the uploaded release asset download URLs.
 
 4. Wire version and documentation checks:
    - Every automatically published commit must have a unique immutable release identity. Prefer a run number or commit suffix for CI prereleases so every push does not require editing manifests; require manifest version advancement for the next stable release.
    - Keep workspace manifests, lockfile, package manifest, and native app manifest synchronized.
    - Require a section named ## [x.y.z] in both changelogs before publishing.
    - Read prerelease notes from the base manifest-version changelog section while retaining the prerelease suffix in artifact names.
-   - Fail early if artifact names do not match the release-note classifier.
+   - Fail early if artifact names do not match the release-note classifier, and test that release-note artifact entries are clickable links to actual release download URLs rather than plain text file names.
 
 5. Validate before committing:
    cargo fmt --all -- --check
@@ -71,7 +71,7 @@ Use this skill to design a reproducible GitHub Actions pipeline with separate qu
 Before presenting the workflow, report:
 - Supported platform/architecture table and any intentionally omitted targets.
 - Quality commands and integration service coverage.
-- Artifact names and release-note classification rules.
+- Artifact names, release download URL format, and release-note classification/linking rules.
 - Required repository secrets/variables and unsigned fallback behavior.
 - Version/changelog requirements.
 - Default-branch prerelease naming, stable-tag behavior, and rerun idempotency.
