@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write README Header"
+  short_description: "Create centered bilingual README introductions"
+  default_prompt: "Use $write-readme-header to create a centered README header and complete a missing Simplified Chinese counterpart."

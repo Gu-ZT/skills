@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conventional Commits"
+  short_description: "生成规范、清晰且可审阅的 Git 提交信息"
+  default_prompt: "Use $conventional-commits to review the staged changes and create a conventional commit."
