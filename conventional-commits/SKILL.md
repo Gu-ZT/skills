@@ -25,6 +25,8 @@ type(scope): 简短中文摘要
 - 具体变更一
 - 具体变更二
 - 具体变更三
+- ...
+- 具体变更n
 ```
 
 Keep the subject imperative, specific, and free of a trailing period. Separate the body from the subject with one blank line. Use `- ` bullets that describe delivered behavior or artifacts, not the development process.
