@@ -45,6 +45,8 @@ project_root/
    git clone https://github.com/Gu-ZT/neoforge-template-mod.git
    ```
 
+   链接快照（2026-09-20 抓取，以仓库为准）：本次抓取未能取得仓库 README（main/master 分支均 404），仓库内容未验证；克隆后必须先读仓库 README 与 `gradle.properties` 确认实际版本与结构，禁止假设分支与默认值；克隆失败时用搜索引擎查找当前可用的 NeoForge 模板仓库。
+
 2. 初始化时询问用户是否引入 AnvilLib 及需要哪些模块（见 [anvillib.md](anvillib.md)）。
 3. 许可证约定：代码默认 **LGPL-3.0**，资源文件（纹理、模型等）默认 **ARR（All Rights Reserved）**；用户有特殊要求时按用户要求。
 4. 同步初始化 Git 仓库并创建 `README.md`（含 mod 简介、构建和运行说明）。

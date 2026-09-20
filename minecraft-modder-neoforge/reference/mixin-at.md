@@ -14,6 +14,10 @@ config = "${mod_id}.mixins.json"
   - 入门：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction
   - 示例：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples
 
+  链接快照（2026-09-20 抓取，以链接为准；过期时重新抓取更新）：
+  - Mixin 只能用 Java 编写（即使主项目用 Kotlin）；MixinExtras 由加载器捆绑，无需额外依赖即可使用 `@Local` 等注解。
+  - 示例页注入模式索引：`@Inject`（`HEAD` / `TAIL` / `RETURN` / `INVOKE` ± `shift`、`slice` 限定范围、`cancellable` + `ci.cancel()` / `cir.setReturnValue()`）；局部变量捕获（`LocalCapture.CAPTURE_FAILHARD` 或 MixinExtras `@Local(ordinal = n)`）；`@Redirect`（方法调用 / `GETFIELD` / `PUTFIELD`）；`@ModifyArg` / `@ModifyArgs` / `@ModifyVariable` / `@ModifyConstant`；内部类目标用 `targets = "...$Inner"`；访问目标类成员用 `@Shadow` 而非强转 `this`。
+
 ## Access Transformer（AT）
 
 访问 Minecraft 私有字段、方法或类时，**优先使用 AT 而非 Mixin 的 `@Accessor` / `@Invoker`**。AT 是 NeoForge 推荐机制，更轻量、性能更好、兼容性更强。

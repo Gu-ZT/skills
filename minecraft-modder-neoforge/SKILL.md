@@ -11,7 +11,13 @@ description: Minecraft NeoForge 模组开发参考。创建新模组、添加物
 2. **文档优先**：禁止凭空猜测任何 API、类名、方法签名或配置格式。不熟悉的 API 必须查阅官方文档：
    - NeoForge 文档：https://docs.neoforged.net/
    - 迁移 Primers：https://docs.neoforged.net/primer/docs/ ；中文翻译：https://gu-zt.github.io/Porting-Primers/
-   - Mixin（Fabric 社区维护，适用于所有加载器）：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction ；示例：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples
+   - Mixin（Fabric 社区维护，适用于所有加载器）：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction ；示例：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples ；机制 Wiki：https://github.com/SpongePowered/Mixin/wiki
+
+   链接快照（2026-09-20 抓取，仅作快速索引，权威内容以链接为准；发现快照过期时重新抓取更新）：
+   - `docs.neoforged.net` 分五大板块：NeoForge Documentation（入门与 API）、Toolchain Features（Gradle 插件）、Primers（版本迁移）、User Guide、Modpack Development。
+   - Primer 索引覆盖 1.12 至 26.2，最新条目 `26.1.x -> 26.2`；中文站覆盖链 `1.21.1 → … → 1.21.11 → 26.1`。26.1 及近期关键变更：`ResourceLocation` 更名 `Identifier`（1.21.11）、Java 25 与反混淆（26.1）、验证大修、新标签提供者、数据组件初始化器、物品实例与堆栈模板、`Level#random` 变 protected、`ChunkPos` 变 record、`Entity#interactAt` 移除、模型重做（1.21.5）、渲染重写（1.21.11）。
+   - Porting-Primers 中文站按「主题地图」与「类和方法索引」组织：遇到编译错误先按类名/方法名在索引中检索，定位具体变更章节。
+   - Mixin 要点与示例页注入模式索引见 [mixin-at.md](reference/mixin-at.md) 的链接快照。
 3. **版本信息禁止依赖训练数据**：最新版本号、版本兼容性、API 变更、迁移步骤一律查官方文档或在线搜索确认。文档查不到就如实告知用户，并提供最接近的可行方案。
 
 ## 核心原则

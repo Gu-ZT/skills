@@ -2,7 +2,12 @@
 
 [AnvilLib](https://lib.anvilcraft.dev/) 是 NeoForge 模组开发辅助库，按模块按需引入。创建项目时询问用户是否使用。使用细节以官方文档 https://lib.anvilcraft.dev/ 为准。
 
-## 模块清单
+链接快照（2026-09-20 抓取，以链接为准；过期时重新抓取更新）：
+
+- 官网由 Anvil Dev 维护，文档站内容以 CC-BY-NC-SA 4.0 发布；各模块文档位于 `https://lib.anvilcraft.dev/posts/docs/<模块名>/`。
+- Maven Central `dev/anvilcraft/lib/` 下 26.1 线实际产物：codec、collision、config、cube、explosion、font、integration、math、moveable-entity-block、multiblock、network、recipe、registrum、rendering、rpc、space-select、sync、sync-processor、util、wheel（cube / explosion / rpc / sync-processor 未在官网首页列出，引入前查其文档）；聚合模块（Main）坐标为 `dev.anvilcraft.lib:anvillib-neoforge-26.1`；`yukkuri` 仅发布过 1.21.1。
+
+## 模块清单（官网首页列出部分；Maven 实际产物见上方快照）
 
 | 模块 | 功能 |
 | --- | --- |
