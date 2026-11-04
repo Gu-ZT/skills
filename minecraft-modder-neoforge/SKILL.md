@@ -1,61 +1,58 @@
 ---
 name: minecraft-modder-neoforge
-description: Minecraft NeoForge 模组开发参考。创建新模组、添加物品/方块/实体、编写配方（RecipeProvider）、注册（DeferredRegister）、数据生成（datagen）、Mixin、Access Transformer、单元测试或排查模组崩溃时加载；默认 NeoForge 26.1.2 / Minecraft 26.1.2，细节按主题查阅 reference/ 子文档。
+description: Minecraft NeoForge 模组开发规范与参考。用于创建新模组、添加物品/方块/实体、编写配方（RecipeProvider）、注册（DeferredRegister）、数据生成（datagen）、Mixin、Access Transformer、单元测试或排查模组崩溃时加载；默认基于 NeoForge 26.1.2 与 Minecraft 26.1.2。
 ---
 
-# Minecraft Modder（NeoForge）
-
-## 绝对原则：先思考，再查文档，最后写代码
-
-1. **思考前置**：需求有歧义时必须列出多种理解让用户选择，禁止静默选择；存在更简单实现时必须主动提出（用户要一个物品，就不搭整套抽象注册系统）。
-2. **文档优先**：禁止凭空猜测任何 API、类名、方法签名或配置格式。不熟悉的 API 必须查阅官方文档：
-   - NeoForge 文档：https://docs.neoforged.net/
-   - 迁移 Primers：https://docs.neoforged.net/primer/docs/ ；中文翻译：https://gu-zt.github.io/Porting-Primers/
-   - Mixin（Fabric 社区维护，适用于所有加载器）：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction ；示例：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples ；机制 Wiki：https://github.com/SpongePowered/Mixin/wiki
-
-   上述链接页面已完整镜像到 [reference/external/](reference/external/)（2026-09-20 抓取，各文件头部含许可署名；权威内容以原链接为准，发现过期时重新抓取更新对应镜像文件）：[neoforged-docs-home.md](reference/external/neoforged-docs-home.md)、[neoforged-primers-index.md](reference/external/neoforged-primers-index.md)、[porting-primers-zh-index.md](reference/external/porting-primers-zh-index.md)、[mixin-introduction-zh.md](reference/external/mixin-introduction-zh.md)、[mixin-examples-zh.md](reference/external/mixin-examples-zh.md)、[mixin-wiki-home.md](reference/external/mixin-wiki-home.md)。优先读本地镜像，镜像不含所需信息时再访问原链接及其子页面。26.1 关键变更提示：`ResourceLocation` 更名 `Identifier`（1.21.11）、Java 25 与反混淆（26.1）、验证大修、新标签提供者、数据组件初始化器、模型重做（1.21.5）、渲染重写（1.21.11）等；完整主题地图与类/方法索引见 porting-primers-zh-index.md。
-3. **版本信息禁止依赖训练数据**：最新版本号、版本兼容性、API 变更、迁移步骤一律查官方文档或在线搜索确认。文档查不到就如实告知用户，并提供最接近的可行方案。
-
-## 核心原则
-
-- **默认版本**：NeoForge 26.1.2 + Minecraft 26.1.2，除非用户明确指定其他加载器或版本。
-- **分层组织**：注册、事件监听、网络包、数据生成分开处理。
-- **工具链**：优先 NeoForge 官方推荐的 ModDevGradle（MDG）。
-- **代码规范**：包含必要 import，禁止内联全限定类名；关键方法添加中文注释与 Javadoc；全程用简体中文与用户交流。
-- **简洁优先**：只写需求要求的代码。禁止为单个物品引入抽象工厂、建造者模式或未要求的配置项、可扩展接口；禁止处理不可能发生的错误场景。写完自问「资深模组开发者会觉得这是过度设计吗」，是则简化。
-- **回复收尾**：回复最后建议下一步操作或需要补充的资源。
-- **外科手术式修改**：改动已有模组时，diff 每一行都必须可追溯到用户的具体请求；匹配既有代码风格；不顺带重构无 bug 代码；清理因本次改动产生的孤立 import/变量/方法，但禁止删除与本任务无关的既有死代码。
+# Minecraft NeoForge 模组开发规范
 
 ## reference/ 导航
 
-| 文档 | 主题 |
+| 文档 | 内容 |
 | --- | --- |
-| [project-setup.md](reference/project-setup.md) | 项目结构、构建/运行命令、模板仓库、许可证约定、资源文件要求、工具链配置 |
-| [registration.md](reference/registration.md) | DeferredRegister 注册体系、`Item.Properties().setId(...)` 强制要求 |
-| [datagen.md](reference/datagen.md) | Datagen-First 原则、GatherDataEvent.Client 入口、各 Provider 用法 |
-| [mixin-at.md](reference/mixin-at.md) | Mixin 使用条件与声明、Access Transformer 优先于 @Accessor/@Invoker |
-| [testing.md](reference/testing.md) | JUnit 单元测试、testframework 服务端测试、GameTest |
-| [anvillib.md](reference/anvillib.md) | AnvilLib 模块清单、按需引入坐标、版本查询 |
-| [source-reading.md](reference/source-reading.md) | 参考开源模组原则、sources.jar / 反编译查阅依赖源码 |
-| [tasks.md](reference/tasks.md) | 常见任务完成标准（建模组、加物品、配方、实体、配置、调试崩溃、写测试） |
-| [external/](reference/external/) | 外部文档完整镜像：官方文档站、Primers 索引（中英）、Mixin 教程与 Wiki、AnvilLib 官网与 Maven 清单 |
+| [reference/project-setup.md](reference/project-setup.md) | 目录结构、Gradle 构建/运行命令、模板仓库、许可证约定、资源文件要求与开发工具配置 |
+| [reference/registration.md](reference/registration.md) | `DeferredRegister` 注册规范、`Item.Properties().setId(...)` 强制用法与 `Identifier` 变更 |
+| [reference/datagen.md](reference/datagen.md) | Datagen 资源生成规范、`GatherDataEvent.Client` 入口与各 `Provider` 用法 |
+| [reference/mixin-at.md](reference/mixin-at.md) | Mixin 启用配置与 `accesstransformer.cfg` 语法 |
+| [reference/testing.md](reference/testing.md) | JUnit 单元测试、`testframework` 服务端测试（`EphemeralTestServerProvider`）与 GameTest |
+| [reference/anvillib.md](reference/anvillib.md) | AnvilLib 模块列表、Gradle 版本目录引入方式与 Maven 仓库地址 |
+| [reference/source-reading.md](reference/source-reading.md) | 查阅依赖 `-sources.jar`、命令行反编译与参考开源模组的许可证规范 |
+| [reference/tasks.md](reference/tasks.md) | 常见开发任务的交付内容与验收标准 |
+| [reference/external/](reference/external/) | 官方文档、迁移 Primers（中英文）、Mixin 教程与 AnvilLib 清单的本地镜像 |
 
-## 快速避坑
+## 编码前核查与文档查阅
 
-- **注册物品必须显式 setId**：NeoForge 26.1.2 起 `new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))`，详见 [registration.md](reference/registration.md)。
-- **可生成资源一律走 datagen**：模型、语言、配方、战利品表、方块状态、标签禁止手写 JSON；禁止因 datagen API 不熟回退手写，详见 [datagen.md](reference/datagen.md)。
-- **Mixin 必须声明**：使用 Mixin 必须在 `neoforge.mods.toml` 声明 `[[mixins]] config = "${mod_id}.mixins.json"`，否则不会被加载。
-- **私有成员访问优先 AT**：禁止优先使用 `@Accessor` / `@Invoker`，详见 [mixin-at.md](reference/mixin-at.md)。
-- **新增物品/方块同步检查资源**：`neoforge.mods.toml` 声明、纹理 PNG、模型、语言文件缺一不可。
-- **依赖源码不入库**：解压到项目 `reference/` 的他人源码必须加入 `.gitignore`，详见 [source-reading.md](reference/source-reading.md)。
+1. **澄清歧义与简化方案**：需求存在多种理解时，必须先列出可选方案交由用户确认，禁止自行猜测；存在更直接的实现方式时，必须主动提出（例如只需新增单个普通物品时，直接注册该物品，禁止搭建多层抽象注册框架）。
+2. **先查文档再写代码**：禁止凭记忆猜测 API 类名、方法签名、最新版本号或配置格式。涉及不熟悉或跨版本变动的 API 时，优先读取 [reference/external/](reference/external/) 下的本地镜像（2026-09-20 抓取）；本地镜像未覆盖或已过期时，查阅在线原链接并同步更新对应镜像文件。若官方文档与源码均无对应 API，直接向用户说明并提供替代方案，禁止编造 API：
+   - NeoForge 官方文档：[neoforged-docs-home.md](reference/external/neoforged-docs-home.md)（https://docs.neoforged.net/ ）
+   - 版本迁移 Primers：[neoforged-primers-index.md](reference/external/neoforged-primers-index.md)（https://docs.neoforged.net/primer/docs/ ）、中文翻译 [porting-primers-zh-index.md](reference/external/porting-primers-zh-index.md)（https://gu-zt.github.io/Porting-Primers/ ）
+   - Mixin 教程与参考：[mixin-introduction-zh.md](reference/external/mixin-introduction-zh.md)、[mixin-examples-zh.md](reference/external/mixin-examples-zh.md)、[mixin-wiki-home.md](reference/external/mixin-wiki-home.md)
+3. **26.1 关键 API 变更**：`ResourceLocation` 已更名为 `Identifier`（1.21.11 起）；构建环境升级至 Java 25 并默认反混淆、验证机制重做、新增标签提供者与数据组件初始化器（26.1 起）；模型系统（1.21.5）与渲染管线（1.21.11）均已重做。完整变更索引见 [porting-primers-zh-index.md](reference/external/porting-primers-zh-index.md)。
+
+## 工程与编码约束
+
+- **默认版本与构建工具**：除非用户指定其他加载器或版本，默认使用 NeoForge 26.1.2、Minecraft 26.1.2 与官方推荐的 ModDevGradle（MDG）。
+- **包结构职责分离**：注册项（`init/`）、事件监听、网络包（`network/`）、数据生成（`data/`）与客户端专属逻辑（`client/`）必须分包存放。
+- **代码格式与注释**：Java 源码必须显式写出 `import` 语句，禁止在代码体中内联全限定类名；关键公开方法添加简体中文注释与 Javadoc。
+- **最简实现**：只编写完成当前需求所需的代码；禁止为单次使用的物品或方块引入抽象工厂、建造者模式或未要求的配置项，禁止为不可能触发的分支编写防御代码。
+- **最小改动范围**：修改已有模组时只改动与当前请求直接相关的代码，保持既有代码风格；清理因本次修改新产生的未使用 `import`、变量或方法，禁止顺手重构无关代码或跨范围删除既有文件。
+
+## 关键强制规则
+
+- **注册物品必须显式调用 `setId`**：NeoForge 26.1.2 起，构造 `Item.Properties` 时必须调用 `new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))`，否则游戏启动注册阶段直接抛出异常（见 [reference/registration.md](reference/registration.md)）。
+- **可生成资源必须走 Datagen**：模型、语言文件、配方、战利品表、方块状态与标签必须通过 Datagen 生成到 `src/generated/resources/`，禁止手写上述 JSON 文件（见 [reference/datagen.md](reference/datagen.md)）。
+- **访问私有成员优先使用 AT**：需要访问原版私有类、字段或方法时，优先在 `src/main/resources/META-INF/accesstransformer.cfg` 中配置 Access Transformer，禁止优先使用 Mixin 的 `@Accessor` 或 `@Invoker`（见 [reference/mixin-at.md](reference/mixin-at.md)）。
+- **使用 Mixin 必须声明配置**：引入 Mixin 时必须在 `neoforge.mods.toml` 中声明 `[[mixins]] config = "${mod_id}.mixins.json"`，否则运行期不会加载 Mixin。
+- **新增游戏内容必须补齐配套资源**：新增物品或方块时，必须同步检查并补齐模型、纹理 PNG、语言本地化条目及 `neoforge.mods.toml` 声明。
+- **外部参考源码禁止入库**：解压到项目 `reference/` 目录供查阅的依赖源码或反编译产物，必须加入 `.gitignore`（见 [reference/source-reading.md](reference/source-reading.md)）。
 
 ## Checklist
 
-- [ ] 需求歧义是否已向用户澄清，而非静默选择？
-- [ ] 涉及的 API、版本信息是否查过官方文档，而非凭训练记忆？
-- [ ] 版本是否为 NeoForge 26.1.2 / MC 26.1.2（或用户明确指定的版本）？
-- [ ] 注册物品是否通过 `Item.Properties().setId(...)` 显式设置 id？
-- [ ] 可自动生成的资源是否全部走 datagen，未手写 JSON？
-- [ ] 改动是否外科手术式，diff 每行可追溯到用户请求？
-- [ ] 代码是否无过度设计、import 完整、注释为中文？
-- [ ] 新增内容是否同步提醒 `neoforge.mods.toml`、纹理、语言文件？
+- [ ] 需求存在歧义时是否已先向用户确认，且未引入当前需求不需要的抽象层？
+- [ ] 所用 API、类名（如 `Identifier`）与版本号是否已核对文档或依赖源码？
+- [ ] 目标版本是否为 NeoForge 26.1.2 / Minecraft 26.1.2（或用户明确指定的版本）？
+- [ ] 注册物品时是否已通过 `Item.Properties().setId(...)` 显式传入 `ResourceKey`？
+- [ ] 模型、语言、配方、战利品表、方块状态与标签是否全部通过 Datagen 生成，未手写 JSON？
+- [ ] 访问私有成员是否优先使用了 Access Transformer，且使用 Mixin 时已在 `neoforge.mods.toml` 中声明？
+- [ ] 新增物品或方块是否已配齐纹理路径、模型、语言条目与 `neoforge.mods.toml` 配置？
+- [ ] 新增代码是否按职责分包（`init/`、`data/`、`network/`、`client/`），显式导入所需类型（无内联全限定名）并添加了中文注释？
+- [ ] 解压到项目 `reference/` 目录的依赖源码或反编译文件是否已加入 `.gitignore`，且 `git diff` 仅包含当前请求直接涉及的改动？

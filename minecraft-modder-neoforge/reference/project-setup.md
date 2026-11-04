@@ -1,104 +1,89 @@
-# 项目结构与构建
+# 项目结构与构建配置
 
-## 项目结构（MDG + 版本目录）
+## 标准目录结构（ModDevGradle + 版本目录）
 
-```
+```text
 project_root/
 ├── build.gradle
 ├── gradle.properties
 ├── settings.gradle
 ├── gradle/
-│   ├── libs.versions.toml          # 版本目录（统一管理依赖版本）
+│   ├── libs.versions.toml          # 统一管理依赖版本
 │   └── wrapper/
 └── src/
-    ├── generated/resources/        # datagen 输出（禁止手动编辑）
+    ├── generated/resources/        # Datagen 输出目录（禁止手动编辑）
     │   ├── data/<modid>/
-    │   │   └── recipe/             # 配方文件由 datagen 生成
+    │   │   └── recipe/             # Datagen 生成的配方
     │   └── assets/<modid>/
-    │       ├── lang/               # 语言文件由 datagen 生成
-    │       └── models/             # 模型文件由 datagen 生成
+    │       ├── lang/               # Datagen 生成的语言文件
+    │       └── models/             # Datagen 生成的模型文件
     ├── main/
-    │   ├── java/<your/package>/
-    │   │   ├── <YourModMainClass>.java
-    │   │   ├── client/             # 客户端逻辑
-    │   │   ├── data/               # datagen（语言、模型、配方、战利品表）
+    │   ├── java/com/example/examplemod/
+    │   │   ├── ExampleMod.java
+    │   │   ├── client/             # 客户端专属逻辑
+    │   │   ├── data/               # Datagen Provider 实现
     │   │   ├── init/               # 注册项（物品、方块、创造模式物品栏等）
-    │   │   ├── mixin/
-    │   │   ├── network/            # 网络包（如需要）
-    │   │   └── util/               # 工具类（如需要）
+    │   │   ├── mixin/              # Mixin 类
+    │   │   ├── network/            # 网络数据包
+    │   │   └── util/               # 通用工具类
     │   ├── resources/
     │   │   ├── META-INF/
-    │   │   │   └── accesstransformer.cfg  # 可选，仅访问私有成员时
+    │   │   │   └── accesstransformer.cfg  # 访问原版私有成员时配置
     │   │   ├── <modid>.mixins.json
     │   │   └── assets/<modid>/
-    │   │       └── textures/       # 仅手动管理的纹理
-    │   └── templates/              # 模板文件（构建时处理）
+    │   │       └── textures/       # 手动放置的 PNG 纹理
+    │   └── templates/
     │       └── META-INF/
     │           └── neoforge.mods.toml
 ```
 
-## 创建新模组
+## 初始化新模组流程
 
-1. 优先使用模板仓库生成骨架（默认 NeoForge 26.1.2 + MC 26.1.2）：
+1. 使用模板仓库初始化项目骨架（默认对应 NeoForge 26.1.2 与 Minecraft 26.1.2；若本机未安装 Git，先搜索当前操作系统的 Git 安装说明并引导安装）：
 
    ```bash
    git clone https://github.com/Gu-ZT/neoforge-template-mod.git
    ```
 
-   链接快照（2026-09-20 抓取，以仓库为准）：本次抓取未能取得仓库 README（main/master 分支均 404），仓库内容未验证；克隆后必须先读仓库 README 与 `gradle.properties` 确认实际版本与结构，禁止假设分支与默认值；克隆失败时用搜索引擎查找当前可用的 NeoForge 模板仓库。
+   注：该仓库在 2026-09-20 抓取时 `main`/`master` 分支 `README.md` 均返回 404，仓库内容未经验证。克隆后必须先读取仓库内的 `README.md` 与 `gradle.properties` 核对实际分支、版本号与目录结构，禁止直接假设默认值；若该仓库不可访问，通过搜索引擎查找当前可用的 NeoForge 26.1 模板仓库。
+2. 询问用户是否引入 AnvilLib 及其具体子模块（见 [anvillib.md](anvillib.md)）。
+3. 确认许可证：除用户另有指定外，源码默认使用 `LGPL-3.0`，纹理与模型等美术资源默认使用 `ARR`（All Rights Reserved）。
+4. 初始化 Git 仓库并编写包含模组简介、构建命令与运行说明的 `README.md`。
+5. 执行 `./gradlew build` 验证构建通过，并启动客户端确认模组列表能正常识别该模组。
 
-2. 初始化时询问用户是否引入 AnvilLib 及需要哪些模块（见 [anvillib.md](anvillib.md)）。
-3. 许可证约定：代码默认 **LGPL-3.0**，资源文件（纹理、模型等）默认 **ARR（All Rights Reserved）**；用户有特殊要求时按用户要求。
-4. 同步初始化 Git 仓库并创建 `README.md`（含 mod 简介、构建和运行说明）。
-5. 验证：`./gradlew build` 通过；运行客户端后模组列表可见该 mod。
+## 常用 Gradle 命令
 
-## 构建与运行命令
-
-| 命令 | 用途 |
+| 命令 | 说明 |
 | --- | --- |
-| `./gradlew build` | 构建 |
-| `./gradlew runClient` | 运行客户端 |
-| `./gradlew runServer` | 运行服务器 |
-| `./gradlew runData` | 运行数据生成 |
-| `./gradlew test` | 运行单元测试 |
-| `./gradlew runGameTestServer` | 运行 GameTest |
+| `./gradlew build` | 编译并打包模组 JAR |
+| `./gradlew runClient` | 启动开发客户端 |
+| `./gradlew runServer` | 启动开发服务端 |
+| `./gradlew runData` | 运行 Datagen 生成资源文件 |
+| `./gradlew test` | 运行 JUnit 单元测试 |
+| `./gradlew runGameTestServer` | 启动 GameTest 测试服务端 |
 
-## 资源文件要求
+## 新增物品与方块的配套资源要求
 
-生成物品或方块时必须同时提供：
+每次新增物品或方块时，必须同时配齐以下四项：
 
-- **模型文件** — 优先 datagen ModelProvider 生成（见 [datagen.md](datagen.md)）
-- **纹理文件** — 手动放置 PNG 到 `textures/item/`、`textures/block/`
-- **语言文件** — 优先 datagen LanguageProvider 生成
-- **`neoforge.mods.toml`** — 提醒用户同步包含新内容的相关声明
+- **模型文件**：通过 Datagen 的 `ModelProvider` 生成（见 [datagen.md](datagen.md)）。
+- **纹理文件**：将 PNG 纹理放入 `src/main/resources/assets/<modid>/textures/item/` 或 `textures/block/`。
+- **语言文件**：通过 Datagen 的 `LanguageProvider` 生成本地化译名。
+- **`neoforge.mods.toml`**：按需更新模组元数据或依赖声明。
 
-## 工具链配置
+## 辅助工具配置
 
-### Git
+### IntelliJ IDEA MCP 服务
 
-创建模组项目需要 Git（克隆模板仓库）。未安装时先搜索当前操作系统下 Git 最新安装指南，引导用户安装。
+在 IntelliJ IDEA 中启用内置 MCP 服务后，可直接调用 IDE 的文件读写、重构、测试运行与编译诊断能力：
 
-### IntelliJ IDEA MCP 服务器
+1. 打开 `文件` -> `设置` -> `工具` -> `MCP 服务器`。
+2. 勾选启用 MCP 服务器（插件默认内置，可在 `设置` -> `插件` -> `已安装` 中确认）。
+3. 在「客户端自动配置」中选择当前 AI 客户端并点击「自动配置」，重启客户端生效。如需免确认执行命令，可在 `MCP 服务器` -> `命令执行` 中开启 Brave 模式。
 
-使用 IntelliJ IDEA 时，可通过内置 MCP 服务器让 AI 直接操作 IDE（读写文件、执行重构、运行测试、获取编译错误）：
+### 网页抓取备用工具（`mcp-webscraper`）
 
-1. `文件` → `设置` → `工具` → `MCP 服务器`
-2. 确认 MCP 服务器插件已启用（默认捆绑，设置 → 插件 → 已安装）
-3. 点击「启用 MCP 服务器」
-4. 在「客户端自动配置」区域选择对应客户端，点击「自动配置」
-5. 重启客户端生效
-
-可选启用 **Brave 模式**（无需确认即可运行命令），位于 MCP 服务器设置 → 命令执行。
-
-### WebScraper（网页抓取兜底）
-
-当前客户端无网页抓取能力时，引导用户安装 `mcp-webscraper`：
-
-```bash
-npx mcp-webscraper
-```
-
-客户端 MCP 配置（如 `.mcp.json`）：
+当运行环境缺少内置网页抓取工具且需要查阅在线文档时，可运行 `npx mcp-webscraper` 或在 `.mcp.json` 中配置 MCP 服务：
 
 ```json
 {
@@ -111,8 +96,4 @@ npx mcp-webscraper
 }
 ```
 
-静态页面无需额外依赖。渲染 JS 页面（如 Vitepress 文档站）需安装 Playwright：
-
-```bash
-npx playwright install chromium
-```
+抓取依赖前端渲染的文档站（如 VitePress）时，需额外执行 `npx playwright install chromium` 安装浏览器内核。

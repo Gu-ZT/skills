@@ -1,23 +1,13 @@
 ---
 name: write-readme-header
-description: Create or revise README opening headers with a centered HTML block containing a project icon, H1 title, bold one-line tagline, and language navigation, including a complete Simplified Chinese counterpart when README.md exists but README.zh_CN.md is missing. Use when Codex needs to polish a README introduction, reproduce a GugleFS-style centered masthead, standardize bilingual README files, add README branding, or complete a missing Simplified Chinese README translation.
+description: 创建或修订居中排版的双语 README 头部（含项目图标、H1 标题、一句话简介与中英切换导航），并在缺少 README.zh_CN.md 时补全完整中文译本。用于美化 README 开头、统一中英双语文档或补齐中文 README 时加载。
 ---
 
-# Write README Header
+# README 双语居中头部规范
 
-Create a compact, repository-native README masthead while preserving the existing document body.
+## 头部 HTML 结构
 
-## Workflow
-
-1. Inspect every existing README variant and relevant project metadata.
-2. Identify the canonical project name, a concise one-line value proposition, an existing repository icon, and the English/Simplified Chinese language pair.
-3. If `README.md` exists but `README.zh_CN.md` is missing, create the Chinese file as a complete translation. Preserve commands, code, URLs, identifiers, filenames, configuration keys, and technical meaning.
-4. Replace or insert the opening masthead in both files. Preserve existing body content except for the translation needed to create a missing counterpart or broader copy changes requested by the user.
-5. Verify that local image and language links resolve, both HTML blocks close, section coverage remains aligned, and the raw Markdown remains readable.
-
-## Header Format
-
-Use this structure:
+README 顶部必须使用以下居中结构，且相邻元素之间各保留一个空行：
 
 ```html
 <div align="center">
@@ -26,31 +16,46 @@ Use this structure:
 
 # Project Name
 
-**A concise project value proposition.**
+**一句话说明项目的核心功能。**
 
 English | [简体中文](README.zh_CN.md)
 
 </div>
 ```
 
-Keep one blank line between each element. Use repository-relative paths with `/` separators. Prefer an existing tracked square icon; do not invent a broken path or add a remote image without approval. Omit the image row when no suitable asset exists and image creation is outside the request.
+- 图标路径必须使用仓库相对路径与 `/` 分隔符，优先选用仓库内已提交的正方形图标文件。
+- 仓库内无可用图标且用户未要求制作图标时，直接省略 `<img>` 行；禁止编造不存在的路径或擅自引用外部远程图片。
+- H1 标题必须保持项目标准的名称大小写。
+- 粗体简介必须用一句话直接说明项目的实际用途，禁止堆砌宣传口号。
+- 除非用户明确要求，禁止在 `<div align="center">` 块内添加徽章（badge）、安装命令、特性列表或营销文案。
+- 修改已有头部时必须整体替换原头部区块，禁止在旧 `<div>` 外层套新的 `<div>`。
 
-## Language Navigation
+## 双语文档与语言导航
 
-Maintain a complete Simplified Chinese counterpart for `README.md` by default. When the English file exists but the Chinese file is missing, translate the full document before adding navigation. Do not create a header-only translation stub. Render the current language as plain text and the other language as a link:
+默认同时维护英文与简体中文两份完整文档。除仓库已有其他命名约定外，英文版固定为 `README.md`，简体中文版固定为 `README.zh_CN.md`。
+
+语言导航行中，当前文档所属语言写为纯文本，另一语言写为 Markdown 链接：
 
 ```markdown
 English | [简体中文](README.zh_CN.md)
 [English](README.md) | 简体中文
 ```
 
-Use `README.md` for English and `README.zh_CN.md` for Simplified Chinese unless the repository already establishes another naming convention. Localize headings, prose, tagline, image alt text, captions, and explanatory comments while preserving executable and machine-readable content.
+- 当 `README.md` 存在而 `README.zh_CN.md` 缺失时，必须先将全文完整翻译为简体中文版，再写入双语导航；禁止创建仅有头部而无正文的残缺译本。
+- 翻译时本地化各级标题、正文说明、简介、图片 `alt` 文本、图注和解释性注释；命令行、代码块、URL、标识符、文件名与配置键必须保持原样。
+- 中英两份文档的章节顺序与覆盖内容必须完全对齐，禁止在翻译过程中遗漏操作说明或配置细节。
 
-## Content Rules
+## 执行流程
 
-- Use the repository's canonical capitalization for the H1.
-- Write a concrete tagline that states what the project does; keep it to one sentence and avoid unsupported slogans.
-- Do not add badges, installation commands, feature lists, or marketing copy inside the centered block unless requested.
-- Replace an existing opening masthead as a unit instead of nesting another `<div>` around it.
-- Keep translated section order and coverage aligned with the source README so neither language silently loses operational details.
-- Check `git diff` after editing so changes below the opening section are intentional.
+1. 读取仓库内现有的全部 README 文件与项目配置（如 `package.json`、`Cargo.toml` 等），确认项目标准名称、核心用途、现有图标路径与双语文件状态。
+2. 若缺少 `README.zh_CN.md`，按章节完整翻译 `README.md` 生成中文文档。
+3. 在两份 README 顶部插入或替换 `<div align="center">` 头部块；除补全译文或用户明确要求修改正文外，保留原有正文内容不变。
+4. 检查本地图片路径与语言跳转链接是否有效、HTML 标签是否闭合、块内相邻元素之间是否保留空行以保证原始 Markdown 可读性，并运行 `git diff` 确认头部以外的正文未被意外改动。
+
+## Checklist
+
+- [ ] `<div align="center">` 是否整体替换了旧头部（未在外层重复嵌套 `<div>`），内部相邻元素之间各保留一个空行且标签正常闭合？
+- [ ] 图标是否使用了仓库内真实存在的相对路径（无可用图标时是否已省略 `<img>` 行）？
+- [ ] 居中块内是否仅包含图标、标准大小写的 H1、无宣传口号的一句话简介与语言导航，未混入未要求的徽章或安装命令？
+- [ ] `README.md` 与 `README.zh_CN.md` 是否均为完整文档，且章节顺序、代码块与配置项完全对齐？
+- [ ] 语言导航是否将当前语言设为纯文本、另一语言设为有效链接？

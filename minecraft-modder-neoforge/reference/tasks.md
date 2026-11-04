@@ -1,37 +1,36 @@
-# 常见任务与完成标准
+# 常见开发任务与验收标准
 
 ## 1. 创建新模组
 
-- 按 [project-setup.md](project-setup.md) 执行：模板仓库生成骨架、确认 AnvilLib 模块、确定许可证、初始化 Git 与 README。
-- ✅ 验证：`./gradlew build` 通过；运行客户端后模组列表可见该 mod。
+- **执行内容**：按 [project-setup.md](project-setup.md) 克隆模板仓库并核对版本、询问是否引入 AnvilLib、确认代码与美术资源许可证、初始化 Git 仓库并编写 `README.md`。
+- **验收标准**：`./gradlew build` 构建通过；运行 `./gradlew runClient` 后在游戏模组列表中可见该模组。
 
-## 2. 添加物品/方块
+## 2. 添加物品或方块
 
-- 注册（[registration.md](registration.md)）、模型、纹理、本地化一次性给出；模型和语言文件走 datagen，纹理手动放置。
-- ✅ 验证：物品/方块在游戏中可见、纹理正确、创造模式物品栏可找到、lang 文件有对应名称。
+- **执行内容**：在 `init/` 包下完成 `DeferredRegister` 注册（物品必须调用 `Item.Properties().setId(...)`，见 [registration.md](registration.md)），通过 Datagen 生成模型与语言条目，并将 PNG 纹理放入 `textures/item/` 或 `textures/block/`。
+- **验收标准**：`./gradlew runData` 成功生成 JSON；游戏内创造模式物品栏或指令可获取该物品/方块，纹理渲染与显示名称正常，无紫黑丢失材质或原始本地化键名。
 
-## 3. 添加合成表
+## 3. 添加合成配方
 
-- 通过 RecipeProvider 在 datagen 中生成，输出到 `data/<modid>/recipe/`。
-- 原版工作台合成类型用 `minecraft:crafting_shaped` / `crafting_shapeless`，禁止写成 `minecraft:recipe_shaped`。
-- ✅ 验证：`./gradlew runData` 后 `src/generated/resources/data/<modid>/recipe/` 下出现 JSON；游戏内可正常合成。
+- **执行内容**：在 `data/` 包下继承 `RecipeProvider` 生成配方，输出至 `src/generated/resources/data/<modid>/recipe/`。原版有序与无序合成类型固定为 `minecraft:crafting_shaped` 与 `minecraft:crafting_shapeless`，禁止误写为 `minecraft:recipe_shaped`。
+- **验收标准**：`./gradlew runData` 在 `recipe/` 目录生成对应 JSON；游戏内工作台可按配方正常合成。
 
-## 4. 自定义实体
+## 4. 添加自定义实体
 
-- 提供实体类、渲染器、模型、生成逻辑。
-- ✅ 验证：实体能在游戏中生成/召唤，模型和纹理渲染正确。
+- **执行内容**：编写实体类、属性注册、客户端渲染器（`EntityRenderer`）、模型类及生成规则。
+- **验收标准**：游戏内可通过指令或刷怪蛋生成该实体，模型动画、碰撞箱与纹理渲染正常。
 
-## 5. 配置文件
+## 5. 添加配置文件
 
-- 使用 `ModConfigSpec`。
-- ✅ 验证：配置文件在 `config/` 目录生成；修改配置后游戏内行为相应改变。
+- **执行内容**：使用 NeoForge 的 `ModConfigSpec`（或用户选定的 AnvilLib `@Config`）定义配置项并注册到模组容器。
+- **验收标准**：启动游戏后在 `run/config/` 下自动生成配置文件；修改配置值后游戏内对应逻辑随之生效。
 
-## 6. 调试崩溃
+## 6. 排查与修复崩溃
 
-- 分析日志，定位注册问题或 Mixin 冲突，给出修复建议。
-- ✅ 验证：复现步骤 → 定位根因 → 给出修改方案 → 确认修复后崩溃不再出现。
+- **执行内容**：读取崩溃日志（`crash-reports/` 或 `latest.log`）堆栈信息，定位未设置物品 `id`、注册时机错误、客户端类在服务端加载或 Mixin 注入目标签名不匹配等根因，并修改对应代码。
+- **验收标准**：说明崩溃触发原因与修复点，重新运行对应端确认崩溃不再复现。
 
-## 7. 编写测试
+## 7. 编写自动化测试
 
-- 为关键逻辑编写 JUnit 单元测试或 GameTest，配置见 [testing.md](testing.md)。
-- ✅ 验证：`./gradlew test` 全部通过；需服务端环境时引入 `testframework` 并使用 `@ExtendWith(EphemeralTestServerProvider.class)`。
+- **执行内容**：按 [testing.md](testing.md) 配置 JUnit 5 或 `testframework`（`@ExtendWith(EphemeralTestServerProvider.class)`），为关键业务逻辑编写测试。
+- **验收标准**：`./gradlew test` 或 `./gradlew runGameTestServer` 全部通过。

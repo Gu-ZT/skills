@@ -1,4 +1,4 @@
 interface:
   display_name: "Conventional Commits"
-  short_description: "生成规范、清晰且可审阅的 Git 提交信息"
-  default_prompt: "Use $conventional-commits to review the staged changes and create a conventional commit."
+  short_description: "按 Conventional Commits 规范生成中文 Git 提交信息"
+  default_prompt: "使用 $conventional-commits 检查当前暂存区改动并创建符合规范的 Git 提交。"

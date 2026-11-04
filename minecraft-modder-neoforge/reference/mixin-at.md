@@ -1,32 +1,33 @@
-# Mixin 与 Access Transformer
+# Mixin 与 Access Transformer（AT）
 
-## Mixin
+## Access Transformer（优先使用）
 
-- 仅在必要时使用 Mixin，使用时必须说明理由并提供示例。
-- **必须在 `neoforge.mods.toml` 中声明 `.mixins.json` 配置文件**，否则 Mixin 不会被 FML 加载：
+需要读取或调用 Minecraft 原版私有类、字段、方法或移除 `final` 修饰符时，**必须优先使用 Access Transformer（AT），禁止优先使用 Mixin 的 `@Accessor` 或 `@Invoker`**。
+
+AT 默认配置文件路径为 `src/main/resources/META-INF/accesstransformer.cfg`（使用该默认路径无需在构建脚本中额外声明）。语法示例：
+
+```text
+# 将类改为 public
+public net.minecraft.server.MinecraftServer
+
+# 将字段改为 public，并附加 -f 移除 final 修饰符
+public-f net.minecraft.server.MinecraftServer random
+
+# 将方法改为 public（需写明完整的字节码参数与返回值描述符）
+public net.minecraft.Util makeExecutor(Ljava/lang/String;)Lnet/minecraft/TracingExecutor;
+```
+
+## Mixin 配置与使用规范
+
+- 仅当 NeoForge 事件总线与 AT 均无法满足需求（如需要修改原版方法内部执行流）时才使用 Mixin，并在代码注释中写明注入原因。
+- **使用 Mixin 时必须在 `neoforge.mods.toml` 中声明配置文件**，否则运行期 FML 不会加载 Mixin：
 
 ```toml
 [[mixins]]
 config = "${mod_id}.mixins.json"
 ```
 
-- 文档（Fabric 社区维护，适用于所有加载器）：
-  - 入门：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction
-  - 示例：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples
-
-  两页已完整镜像（2026-09-20 抓取，CC BY-NC-SA 4.0；以原链接为准，过期时重新抓取）：[mixin-introduction-zh.md](external/mixin-introduction-zh.md)、[mixin-examples-zh.md](external/mixin-examples-zh.md)（含全部注入模式示例：`@Inject` / `@Redirect` / `@ModifyArg` / `@ModifyArgs` / `@ModifyVariable` / `@ModifyConstant`、局部变量捕获、Slice）。机制 Wiki 首页镜像：[mixin-wiki-home.md](external/mixin-wiki-home.md)。
-
-## Access Transformer（AT）
-
-访问 Minecraft 私有字段、方法或类时，**优先使用 AT 而非 Mixin 的 `@Accessor` / `@Invoker`**。AT 是 NeoForge 推荐机制，更轻量、性能更好、兼容性更强。
-
-默认路径 `src/main/resources/META-INF/accesstransformer.cfg`，使用默认路径无需额外配置。语法示例：
-
-```
-# 公开类
-public net.minecraft.server.MinecraftServer
-# 公开字段（可附加 -f 移除 final）
-public-f net.minecraft.server.MinecraftServer random
-# 公开方法（需注明参数和返回值类型描述符）
-public net.minecraft.Util makeExecutor(Ljava/lang/String;)Lnet/minecraft/TracingExecutor;
-```
+- 注入注解（`@Inject`、`@Redirect`、`@ModifyArg`、`@ModifyArgs`、`@ModifyVariable`、`@ModifyConstant`）、局部变量捕获与 Slice 用法优先查阅本地镜像（Fabric 社区维护的 Mixin 教程适用于包括 NeoForge 在内的所有加载器，本地镜像遵循 CC BY-NC-SA 4.0）：
+  - 基础概念：[mixin-introduction-zh.md](external/mixin-introduction-zh.md)（原链：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_introduction ）
+  - 注入示例：[mixin-examples-zh.md](external/mixin-examples-zh.md)（原链：https://wiki.fabricmc.net/zh_cn:tutorial:mixin_examples ）
+  - SpongePowered 官方 Wiki：[mixin-wiki-home.md](external/mixin-wiki-home.md)（原链：https://github.com/SpongePowered/Mixin/wiki ）

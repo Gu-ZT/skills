@@ -1,4 +1,4 @@
 interface:
   display_name: "Write README Header"
-  short_description: "创建居中的双语 README 开头"
-  default_prompt: "Use $write-readme-header to create a centered README header and complete a missing Simplified Chinese counterpart."
+  short_description: "创建居中的双语 README 头部并补全简体中文 README"
+  default_prompt: "使用 $write-readme-header 为当前仓库添加居中的双语 README 头部，并补全缺失的 README.zh_CN.md。"

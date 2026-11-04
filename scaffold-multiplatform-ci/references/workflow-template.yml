@@ -11,7 +11,7 @@ permissions:
 
 env:
   NODE_VERSION: "24"
-  # Replace repository-specific commands and paths before using this file.
+  # 使用前将下方与仓库相关的脚本和构建命令替换为当前项目的实际路径。
 
 jobs:
   quality:
@@ -85,8 +85,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
-        # Resolve default-branch pushes as unique prereleases and exact version tags as stable releases.
-        # Keep the release draft until update-release-notes publishes it after every build succeeds.
+        # 默认分支 push 生成唯一预发布版本，精确版本标签生成正式版本。
+        # 在全部构建任务成功且 update-release-notes 完成前，始终保持草稿（draft）状态。
         run: ./ci/resolve-release.sh "$GITHUB_REF_TYPE" "$GITHUB_REF_NAME" "$GITHUB_RUN_NUMBER"
 
   build:

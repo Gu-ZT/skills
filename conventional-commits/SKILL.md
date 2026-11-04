@@ -1,61 +1,65 @@
 ---
 name: conventional-commits
-description: Create Git commits using Conventional Commits with a scoped Chinese subject and a concise bullet-list body. Use when Codex is asked to commit changes, prepare a commit message, amend a commit message, or review whether a proposed commit follows the required format.
+description: 使用 Conventional Commits 格式创建 Git 提交（带作用域的简体中文标题与列表正文）。用于提交代码、编写或修改提交信息（git commit --amend）、审查提交信息格式时加载。
 ---
 
-# Conventional Commits
+# Conventional Commits 提交规范
 
-## Workflow
+## 提交信息格式
 
-1. Inspect `git status`, staged and unstaged diffs, and recent commit style.
-2. Do not stage unrelated files. Never include secrets, generated output, dependencies, local data, or user changes unrelated to the requested work.
-3. Run the verification appropriate to the changed files before committing.
-4. Choose one commit type and an optional concise scope.
-5. Write the subject and body in Chinese unless the repository explicitly uses another language.
-6. Run `git diff --cached --check` and review `git diff --cached --stat` before committing.
-7. Create the commit non-interactively and report its hash and verification result.
-
-## Message Format
-
-Use exactly this structure when the change needs a body:
+需要展开说明变更细节时，必须使用以下结构：
 
 ```text
 type(scope): 简短中文摘要
 
 - 具体变更一
 - 具体变更二
-- 具体变更三
-- ...
-- 具体变更n
 ```
 
-Keep the subject imperative, specific, and free of a trailing period. Separate the body from the subject with one blank line. Use `- ` bullets that describe delivered behavior or artifacts, not the development process.
+- 标题必须使用祈使句、指明具体改动，且末尾禁止加句号；除仓库明确约定其他语言外，标题与正文一律使用简体中文。
+- 标题与正文之间必须保留一个空行。
+- 正文列表项以 `- ` 开头，只写本次交付的行为或产物变化，禁止记录排查经过或开发过程。
 
-For a genuinely small change, a subject-only commit is acceptable:
+多条变更的正文示例：
+
+```text
+docs(api): 添加核心TCP协议和管理API文档
+
+- 新增管理接口定义，包含设备与用户管理相关结构
+- 添加消息处理模块，支持注册、心跳等核心协议操作
+- 补充项目构建脚本与配置文件说明
+```
+
+改动极小时允许只写标题，省略正文：
 
 ```text
 fix(auth): 修复过期令牌未被拒绝的问题
 ```
 
-## Types
+## 类型与作用域
 
-- `feat`: Add user-visible behavior.
-- `fix`: Correct faulty behavior.
-- `docs`: Change documentation only.
-- `refactor`: Restructure code without changing behavior.
-- `test`: Add or revise tests only.
-- `build`: Change build tools or dependencies.
-- `ci`: Change automation workflows.
-- `perf`: Improve performance.
-- `style`: Change formatting without changing behavior.
-- `chore`: Perform repository maintenance not covered above.
-- `revert`: Revert an earlier commit.
+`type` 必须从以下类型中选择其一：
 
-Use a lowercase scope naming the affected subsystem, such as `api`, `auth`, `mcp`, `frontend`, or `docs`. Omit the scope when no single subsystem accurately describes the change.
+| 类型 | 适用变更 |
+| --- | --- |
+| `feat` | 新增用户可见的功能或行为 |
+| `fix` | 修复缺陷或错误行为 |
+| `docs` | 仅修改文档 |
+| `refactor` | 重构代码结构且不改变外部行为 |
+| `test` | 仅新增或修改测试 |
+| `build` | 修改构建配置、脚本或依赖版本 |
+| `ci` | 修改持续集成配置或自动化工作流 |
+| `perf` | 优化性能 |
+| `style` | 仅调整代码格式且不影响运行逻辑 |
+| `chore` | 除上述类别外的日常仓库维护 |
+| `revert` | 回滚先前的提交 |
 
-## Breaking Changes
+- `scope` 使用全小写字母标明受影响的子系统（如 `api`、`auth`、`mcp`、`frontend`、`docs`）；改动跨多个模块且无单一主模块时省略括号与 `scope`。
+- 使用 `docs` 类型前必须确认暂存区仅含文档文件；若同时包含源码或工程脚手架，必须拆分为多次独立提交，或改用代表核心产物的类型。
 
-Add `!` before the colon and a `BREAKING CHANGE:` footer when compatibility is intentionally broken:
+## 不兼容变更（Breaking Changes）
+
+故意破坏向后兼容性时，必须在冒号前添加 `!`，并在正文末尾附上 `BREAKING CHANGE:` 说明：
 
 ```text
 feat(api)!: 调整文档查询参数
@@ -65,16 +69,18 @@ feat(api)!: 调整文档查询参数
 BREAKING CHANGE: 旧版仅传 knowledge_base_id 的调用方式不再受支持。
 ```
 
-## Example
+## 执行流程
 
-```text
-docs(api): 添加核心TCP协议和管理API文档
+1. 检查 `git status`、暂存区与工作区的 diff，以及 `git log` 中最近的提交风格。
+2. 仅暂存本次任务直接修改的文件；禁止将密钥、构建产物、依赖目录、本地临时数据或无关改动纳入提交。
+3. 提交前必须运行与改动文件匹配的测试或编译检查。
+4. 运行 `git diff --cached --check` 检查空白字符错误，并核对 `git diff --cached --stat` 中的文件列表。
+5. 以非交互方式执行 `git commit`，完成后输出提交哈希值与验证结果。
 
-- 定义MCNP Core TCP协议v1规范，包括连接、安全、帧格式
-- 详细描述会话建立、消息模型、各种方法接口和数据结构
-- 添加HTTP错误模型和错误码映射规范
-- 包含环境管理、一键搭建、配置识别等功能API文档
-- 初始化Rust项目基础结构和.gitignore配置
-```
+## Checklist
 
-Before using `docs`, confirm the staged changes are documentation-only. If source code or project scaffolding is included, split the work into coherent commits or choose the type that represents the primary delivered change.
+- [ ] 暂存区是否仅包含本次任务相关的文件，无密钥、构建产物或无关改动？
+- [ ] 提交前是否已通过对应模块的测试或构建验证，且 `git diff --cached --check` 无报错？
+- [ ] `type` 是否与暂存区的实际改动一致（含源码改动时未误用 `docs`），且 `scope` 为全小写子系统名（跨模块且无单一主模块时已省略）？
+- [ ] 标题是否为无句尾句号的简体中文祈使句，标题与列表正文之间是否保留了一个空行，且正文仅记录交付结果（未记录开发过程）？
+- [ ] 包含不兼容变更时，是否同时标注了 `!` 与 `BREAKING CHANGE:` 尾注？

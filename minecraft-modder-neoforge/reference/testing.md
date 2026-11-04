@@ -1,12 +1,13 @@
 # 单元测试与 GameTest
 
-MDG 支持通过 JUnit 对模组进行单元测试，测试中可引用 Minecraft 类。
+ModDevGradle（MDG）支持使用 JUnit 5 对模组逻辑编写单元测试，并可在测试代码中直接引用 Minecraft 与 NeoForge 类。
 
-## build.gradle 配置
+## `build.gradle` 单元测试配置
 
-```gradle
+```groovy
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'    // 示例版本，禁止照抄，以模板仓库或查询结果为准
+    // 版本号需根据模板仓库或最新查询结果填写，禁止直接照抄示例值
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -17,16 +18,16 @@ test {
 neoForge {
     unitTest {
         enable()
-        testedMod = mods."${mod_id}"    // 指定被测试的 mod
+        testedMod = mods."${mod_id}" // 绑定当前被测模组
     }
 }
 ```
 
-## 加载服务端
+## 服务端环境测试（`testframework`）
 
-测试需要服务端环境时引入 testframework：
+当测试逻辑依赖完整 `MinecraftServer` 实例时，引入 `testframework` 并配合 `@ExtendWith(EphemeralTestServerProvider.class)`：
 
-```gradle
+```groovy
 dependencies {
     testImplementation "net.neoforged:testframework:${neo_version}"
 }
@@ -34,15 +35,15 @@ dependencies {
 
 ```java
 @ExtendWith(EphemeralTestServerProvider.class)
-public class TestClass {
+public class ServerLogicTest {
     @Test
-    public void testMethod(MinecraftServer server) {
-        // 在服务端上下文中执行测试
+    public void testWithServer(MinecraftServer server) {
+        // 在临时服务端上下文中执行验证
     }
 }
 ```
 
-## 运行命令
+## 执行命令
 
-- 单元测试：`./gradlew test`
-- GameTest：`./gradlew runGameTestServer`
+- 运行 JUnit 单元测试：`./gradlew test`
+- 运行游戏内集成测试（GameTest）：`./gradlew runGameTestServer`

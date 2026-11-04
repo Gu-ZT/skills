@@ -1,37 +1,32 @@
-# 数据生成（Datagen-First）
+# 数据生成（Datagen）
 
-## 原则
+## 核心原则
 
-**优先使用 datagen 生成一切可自动生成的资源，禁止手写 JSON 文件。**
+凡是可通过 Datagen 自动生成的 JSON 资源，必须使用 Datagen 生成并输出到 `src/generated/resources/`，**禁止手写或手动修改生成的 JSON 文件**。仅 PNG 纹理等二进制文件手动放置在 `src/main/resources/assets/<modid>/textures/` 下。
 
-Minecraft 版本更新时 datagen API（`DataGenerator`、`PackOutput`、各 Provider 构造参数）可能大幅变更。无论 API 变得多复杂，都必须通过阅读官方文档和查阅源码正确使用 datagen，**禁止因 API 不熟悉回退到手写 JSON**。
+Minecraft 跨版本升级时，`DataGenerator`、`PackOutput` 及各 `Provider` 的签名可能发生变动；遇到 API 变更时必须查阅官方文档或依赖源码适配新签名，禁止因 API 变动而回退到手写 JSON。
 
-仅 `textures/` 等二进制资源手动放置于 `src/main/resources/assets/<modid>/textures/`。
+## 资源类型与 Provider 对应表
 
-## 必须通过 datagen 生成的资源
-
-输出目录 `src/generated/resources/`（禁止手动编辑）：
-
-| 资源 | Provider | 输出路径 |
+| 资源类型 | Provider 类 | 生成路径（相对于 `src/generated/resources/`） |
 | --- | --- | --- |
 | 语言文件 | `LanguageProvider` | `assets/<modid>/lang/en_us.json` |
-| 物品/方块模型 | `ModelProvider` | `assets/<modid>/models/` |
+| 物品与方块模型 | `ModelProvider` | `assets/<modid>/models/` |
 | 配方 | `RecipeProvider` | `data/<modid>/recipe/` |
 | 战利品表 | `LootTableProvider` | `data/<modid>/loot_table/` |
 | 方块状态 | `BlockStateProvider` | `assets/<modid>/blockstates/` |
 | 标签 | `TagProvider` | `data/<modid>/tags/` |
 
-## 入口类（`data/` 包下）
+## 入口类示例（`data/` 包）
 
 ```java
-@EventBusSubscriber(modid = YourMod.MOD_ID)
-public class YourModData {
+@EventBusSubscriber(modid = ExampleMod.MOD_ID)
+public class ExampleModData {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
-        generator.addProvider(true, new YourModLanguageProvider(packOutput));
-        // ...其他 Provider
+        generator.addProvider(true, new ExampleModLanguageProvider(packOutput));
     }
 }
 ```
@@ -39,20 +34,20 @@ public class YourModData {
 ## LanguageProvider 示例
 
 ```java
-public class YourModLanguageProvider extends LanguageProvider {
-    public YourModLanguageProvider(PackOutput output) {
-        super(output, YourMod.MOD_ID, "en_us");
+public class ExampleModLanguageProvider extends LanguageProvider {
+    public ExampleModLanguageProvider(PackOutput output) {
+        super(output, ExampleMod.MOD_ID, "en_us");
     }
 
     @Override
     protected void addTranslations() {
-        this.add("item.yourmod.example_item", "Example Item");
-        this.add("block.yourmod.example_block", "Example Block");
-        this.add("itemGroup.yourmod.default", "Your Mod");
+        this.add("item.examplemod.example_item", "Example Item");
+        this.add("block.examplemod.example_block", "Example Block");
+        this.add("itemGroup.examplemod.default", "Example Mod");
     }
 }
 ```
 
-## 验证
+## 生成与验证
 
-运行 `./gradlew runData` 后检查 `src/generated/resources/` 下生成了预期 JSON；进游戏确认资源生效。
+执行 `./gradlew runData`，确认 `src/generated/resources/` 下已生成对应的 JSON 文件，再启动客户端验证游戏内模型、名称与配方正常生效。
